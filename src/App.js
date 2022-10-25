@@ -2,15 +2,21 @@ import { useState } from "react";
 import "./App.css";
 import DicomSlide from "./components/DicomSlide";
 import FileInput from "./components/FileInput";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from "react-responsive-carousel";
 
 function App() {
   const [numberOfSlides, setNumberOfSlides] = useState(1);
   const [isSlidesSet, setIsSlidesSet] = useState(false);
   const [generateSlides, setGenerateSlides] = useState(false);
 
+  //loader component
+  const [isLoading, setIsLoading] = useState(false);
+
   //images for each slide
   const [slideImages, setSlideImages] = useState({});
 
+  //invoke when user changes required slide num
   const handleNumberChange = (event) => {
     const slidesNum = event.target.value;
     console.log(slidesNum);
@@ -25,28 +31,67 @@ function App() {
     }
   };
 
+  //reset created slides , start over
   const handleResetSlides = () => {
     setIsSlidesSet(false);
     setNumberOfSlides(1);
+    setSlideImages({});
+    setGenerateSlides(false);
   };
 
+  //add images to slide from the modal dialogue box
   const handleAddImagesToSlide = (slideNum, images) => {
     //update state with slideNum and images array
-
     setSlideImages({ ...slideImages, [slideNum]: images });
   };
 
   //creating slides
   const handleCreateSlides = () => {
-    setGenerateSlides(true);
+    if (numberOfSlides !== Object.keys(slideImages).length) {
+      window.alert("Please provide atleast one image to selected slides");
+      return;
+    }
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      setGenerateSlides(true);
+    }, 2000);
+  };
+
+  //remove a slide
+  const handleRemoveSlide = (slideNum) => {
+    if (slideImages.hasOwnProperty(slideNum)) {
+      setSlideImages((prev) => {
+        const copy = { ...prev };
+        delete copy[slideNum];
+        return copy;
+      });
+
+      if (Object.keys(slideImages).length == 1) {
+        handleResetSlides();
+      }
+    } else {
+      window.alert("Unable to delete the slide");
+    }
+  };
+
+  //add new images to existing slide
+  const handleAddNewImages = (slideNum, imgs) => {
+    setSlideImages((prev) => {
+      const copy = { ...prev };
+      copy[slideNum] = [...prev[slideNum], ...imgs];
+      return copy;
+    });
+  };
+
+  //handle cancel button
+  const handleCancelButton = () => {
     setIsSlidesSet(false);
   };
 
-  console.log("slide images", slideImages);
-
   return (
     <div className="App">
-      <h1>Dicom Image Slides</h1>
+      <h2>Dicom Image Slides</h2>
       {/* seperator */}
       <div style={{ height: "2px", backgroundColor: "grey" }}></div>
 
@@ -69,7 +114,7 @@ function App() {
             alignItems: "center",
             position: "absolute",
             top: "5px",
-            height: "100px",
+            height: "80px",
           }}
         >
           <div
@@ -82,7 +127,9 @@ function App() {
           >
             {!isSlidesSet && !generateSlides && (
               <>
-                <p>Please select number of slides required(max:5):</p>
+                <p className="text_bold" style={{ marginRight: "10px" }}>
+                  Please select number of slides required(max:5):
+                </p>
                 <input
                   type="number"
                   max="5"
@@ -90,14 +137,23 @@ function App() {
                   style={{ width: "50px", height: "20px", marginRight: "10px" }}
                   onChange={handleNumberChange}
                 />
-                <button type="button" onClick={handleAddSlidesNumber}>
+                <button
+                  className="button_normal"
+                  type="button"
+                  onClick={handleAddSlidesNumber}
+                >
                   Create
                 </button>
               </>
             )}
             {isSlidesSet && (
               <>
-                <button type="button" onClick={handleResetSlides}>
+                <button
+                  className="button_cancel"
+                  style={{ width: "100px", fontWeight: "bold" }}
+                  type="button"
+                  onClick={handleResetSlides}
+                >
                   Reset Slides
                 </button>
               </>
@@ -113,19 +169,47 @@ function App() {
               justifyContent: "center",
               alignItems: "center",
               position: "relative",
-              marginTop: "110px",
-              border: "1px solid red",
+              marginTop: "100px",
+              height: "100%",
             }}
           >
-            {Object.keys(slideImages).map((key, index) => {
-              const imageFiles = slideImages[key];
-              return <DicomSlide imageFiles={imageFiles} slideNum={key} />;
-            })}
+            <div
+              style={{
+                width: "70%",
+                borderColor: "grey",
+                borderWidth: "2px 2px",
+                borderStyle: "solid",
+                height: "550px",
+                borderRadius: "5px",
+                marginBottom: "40px",
+              }}
+            >
+              {/* carousal for displaying each slides */}
+              <Carousel
+                centerMode={true}
+                showArrows={true}
+                showIndicators={false}
+                swipeable={false}
+                showThumbs={false}
+              >
+                {Object.keys(slideImages).map((key, index) => {
+                  const imageFiles = slideImages[key];
+                  return (
+                    <DicomSlide
+                      imageFiles={imageFiles}
+                      slideNum={key}
+                      handleRemoveSlide={handleRemoveSlide}
+                      addNewImages={handleAddNewImages}
+                    />
+                  );
+                })}
+              </Carousel>
+            </div>
           </div>
         )}
       </div>
       {/* modal for adding images to each slides at the beginning */}
-      {isSlidesSet && (
+      {isSlidesSet && !generateSlides && (
         <div
           style={{
             position: "absolute",
@@ -147,9 +231,30 @@ function App() {
               />
             </div>
           ))}
-          <button type="button" onClick={handleCreateSlides}>
-            Create Slides
-          </button>
+          <div className="button_group">
+            <button
+              type="button"
+              className="button_normal"
+              style={{
+                width: "100px",
+                marginRight: "20px",
+                marginLeft: "-50px",
+              }}
+              onClick={handleCreateSlides}
+            >
+              Create Slides
+            </button>
+            <button
+              type="button"
+              className="button_cancel"
+              onClick={handleCancelButton}
+            >
+              Cancel
+            </button>
+          </div>
+          <div>
+            {isLoading && <h4 className="text_success">Creating slides...</h4>}
+          </div>
         </div>
       )}
     </div>

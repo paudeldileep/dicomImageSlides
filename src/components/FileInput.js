@@ -7,29 +7,41 @@ const FileInput = (props) => {
   const [isImagesAdded, setIsImagesAdded] = useState(false);
 
   const handleFileChange = (event) => {
+    if (event.target.files.length > 5) {
+      window.alert("Please select maximum 5 images");
+      return;
+    }
     let fileArray = [];
     for (let i = 0; i < event.target.files.length; i++) {
       const fls = event.target.files[i];
       fileArray.push("wadouri:" + URL.createObjectURL(fls));
-    }
-
-    if (!window.confirm("Are you sure to add theses images?")) {
-      return;
     }
     setImages(fileArray);
   };
 
   //send images back to parent(here App.js) where this component is loaded
   const handleAddImagesToSlide = () => {
-    if (images.length > 0) {
+    if (!window.confirm("Are you sure to add theses images?")) {
+      return;
+    }
+    if (images.length > 0 && images.length <= 5) {
       addImagesToSlide(slideNum, images);
       setIsImagesAdded(true);
       setImages([]);
+    } else {
+      window.alert("Maximum 5 and minimum 1 image is required");
     }
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", width: "90%" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width: "90%",
+        marginBottom: "10px",
+      }}
+    >
       {!isImagesAdded && (
         <>
           <h5>select images for Slide {slideNum}</h5>
@@ -38,6 +50,7 @@ const FileInput = (props) => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              width: "100%",
             }}
           >
             <input
@@ -47,13 +60,24 @@ const FileInput = (props) => {
               onChange={handleFileChange}
               multiple
             />
-            <button type="button" onClick={handleAddImagesToSlide}>
+            <button
+              className="button_normal"
+              style={{
+                width: "100px",
+                height: "25px",
+                marginLeft: "20px",
+              }}
+              type="button"
+              onClick={handleAddImagesToSlide}
+            >
               Add Images
             </button>
           </div>
         </>
       )}
-      {isImagesAdded && <p>Images added to Slide {slideNum}</p>}
+      {isImagesAdded && (
+        <p className="text_success">Images added to Slide {slideNum}</p>
+      )}
     </div>
   );
 };
