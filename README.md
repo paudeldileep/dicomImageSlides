@@ -1,13 +1,13 @@
 # Getting Started with Dicom Image Slides Viewer
 
-Live at [Dicom Slides Viewer](https://github.com/facebook/create-react-app).
+Live at [Dicom Slides Viewer](https://dicomviewer-two.vercel.app/).
 
 ## Features
 
     1. Create certain number of slides (current limitation is 5)
     2. Add certain number of images to each slide (current limitation is 5 and minimum 2 images)
     3. View each slide (to navigate there are left and right arrows in the slider(visible on hovering on left and right side))
-    4. Navigate to each image in a slide (sometimes code crashes as local URL is used for viewing)
+    4. Navigate to each image in a slide
     4. Add further images to each slide
     5. Remove current slide
     6. Download images in the current slide
@@ -16,9 +16,8 @@ Live at [Dicom Slides Viewer](https://github.com/facebook/create-react-app).
 
     * Please add DICOM images (.dcm)to slide from your local storage(device)
     * Images are not sent to server and accessed using temporary local URL
-    * Sometimes app crashes while scrolling down each image on a slide (advised to wait 10-15 sec before scrolling on a slide)
+    * Random app crashes while scrolling down each image on a slide (advised to wait 10-15 sec before scrolling on a slide)
     * Because of local object URL the downloaded files are also not actual .dcm (but the code work fine with image URLs pulled from server)
-    *
 
 ### Dependencies
 
