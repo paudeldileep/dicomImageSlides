@@ -64,3 +64,14 @@
   border-radius: 5px;
   outline: none;
 }
+
+.button_normal:hover {
+  transform: scale(1.05);
+  transition: all 0.3s linear;
+}
+
+.box_shadow {
+  box-shadow: 6px 6px 11px 1px rgba(0, 0, 0, 0.77);
+  -webkit-box-shadow: 6px 6px 11px 1px rgba(0, 0, 0, 0.77);
+  -moz-box-shadow: 6px 6px 11px 1px rgba(0, 0, 0, 0.77);
+}

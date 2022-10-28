@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { saveAs } from "file-saver";
 import DicomViewPort from "./DicomViewPort";
 
 const DicomSlide = ({
@@ -9,10 +10,15 @@ const DicomSlide = ({
 }) => {
   // handle addition of new images to the slide
   const [newImages, setNewImages] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handleAddNewImages = (event) => {
     if (event.target.files.length > 5) {
-      window.alert("Please select maximum 5 images");
+      window.alert("Please select maximum 5 images only");
+      return;
+    }
+    if (event.target.files.length + imageFiles.length > 5) {
+      window.alert("Error:Maximum 5 images per slide is allowed");
       return;
     }
     let newFileArray = [];
@@ -26,14 +32,42 @@ const DicomSlide = ({
 
   const sendNewImages = () => {
     if (newImages.length > 5 || newImages.length < 1) {
-      window.alert("Please select maximum 5 images");
+      window.alert("Please select upto 5 images");
+      return;
+    }
+    if (newImages.length + imageFiles.length > 5) {
+      window.alert("Error:Maximum 5 images per slide is allowed");
       return;
     }
     if (!window.confirm("Are you sure to add theses images?")) {
       return;
     }
+    setLoading(true);
     addNewImages(slideNum, newImages);
-    window.alert("New Images added to slide");
+    setTimeout(() => {
+      setLoading(false);
+      window.alert("New Images added to slide");
+    }, 2000);
+  };
+
+  // download a slide
+  const handleDownload = () => {
+    var JSZip = require("jszip");
+    let zip = new JSZip();
+
+    for (let i = 0; i < imageFiles.length; i++) {
+      let file = "http://localhost:" + imageFiles[i].split(":")[4];
+      zip.file(i + ".dcm", file);
+      //console.log("file:", "http://localhost:" + imageFiles[i].split(":")[4]);
+    }
+
+    zip
+      .generateAsync({
+        type: "blob",
+      })
+      .then((content) => {
+        saveAs(content, `slides_${slideNum}.zip`);
+      });
   };
 
   return (
@@ -59,7 +93,7 @@ const DicomSlide = ({
         style={{
           position: "absolute",
           bottom: "0px",
-          height: "100px",
+          height: "110px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-start",
@@ -73,9 +107,12 @@ const DicomSlide = ({
             alignItems: "center",
             justifyContent: "space-between",
             width: "95%",
+            marginTop: "-5px",
           }}
         >
-          <p className="text_normal">Slide Number: {parseInt(slideNum) + 1}</p>
+          <p className="text_normal">Slide: {parseInt(slideNum) + 1}</p>
+          {loading && <p className="text_success">Adding Images...</p>}
+          {!loading && <p>Total Images:{imageFiles.length}</p>}
           <button
             type="button"
             className="button_cancel"
@@ -86,9 +123,16 @@ const DicomSlide = ({
           </button>
         </div>
         {imageFiles.length > 0 && (
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <div
+            style={{ display: "flex", alignItems: "center", marginTop: "-5px" }}
+          >
             <span className="text_bold">Add New images to slide:</span>
-            <input type="file" onChange={handleAddNewImages} multiple />
+            <input
+              type="file"
+              onChange={handleAddNewImages}
+              multiple
+              accept=".dcm,image/dicom-rle"
+            />
             <button
               type="button"
               className="button_normal"
@@ -99,6 +143,18 @@ const DicomSlide = ({
             </button>
           </div>
         )}
+        <button
+          style={{
+            marginTop: "10px",
+            width: "90%",
+            backgroundColor: "white",
+            color: "black",
+          }}
+          className="button_normal"
+          onClick={handleDownload}
+        >
+          Download Slide
+        </button>
       </div>
     </div>
   );

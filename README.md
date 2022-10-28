@@ -1,8 +1,31 @@
-# Getting Started with Create React App
+# Getting Started with Dicom Image Slides Viewer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Live at [Dicom Slides Viewer](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Features
+
+    1. Create certain number of slides (current limitation is 5)
+    2. Add certain number of images to each slide (current limitation is 5 and minimum 2 images)
+    3. View each slide (to navigate there are left and right arrows in the slider(visible on hovering on left and right side))
+    4. Navigate to each image in a slide (sometimes code crashes as local URL is used for viewing)
+    4. Add further images to each slide
+    5. Remove current slide
+    6. Download images in the current slide
+
+### `Limitations`
+
+    * Please add DICOM images (.dcm)to slide from your local storage(device)
+    * Images are not sent to server and accessed using temporary local URL
+    * Sometimes app crashes while scrolling down each image on a slide (advised to wait 10-15 sec before scrolling on a slide)
+    * Because of local object URL the downloaded files are also not actual .dcm (but the code work fine with image URLs pulled from server)
+    *
+
+### Dependencies
+
+    1. "react-cornerstone-viewport" for viewing the images
+    2. "react-responsive-carousel" for creating slide carousel
+
+## Available Scripts for running locally:
 
 In the project directory, you can run:
 
@@ -38,33 +61,3 @@ If you aren't satisfied with the build tool and configuration choices, you can `
 Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)

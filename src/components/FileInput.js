@@ -24,12 +24,12 @@ const FileInput = (props) => {
     if (!window.confirm("Are you sure to add theses images?")) {
       return;
     }
-    if (images.length > 0 && images.length <= 5) {
+    if (images.length > 1 && images.length <= 5) {
       addImagesToSlide(slideNum, images);
       setIsImagesAdded(true);
       setImages([]);
     } else {
-      window.alert("Maximum 5 and minimum 1 image is required");
+      window.alert("Maximum 5 and minimum 2 images is required");
     }
   };
 
@@ -44,7 +44,7 @@ const FileInput = (props) => {
     >
       {!isImagesAdded && (
         <>
-          <h5>select images for Slide {slideNum}</h5>
+          <h5>select images for Slide {slideNum} (min:2,max:5)</h5>
           <div
             style={{
               display: "flex",
@@ -59,6 +59,7 @@ const FileInput = (props) => {
               min="1"
               onChange={handleFileChange}
               multiple
+              accept=".dcm,image/dicom-rle"
             />
             <button
               className="button_normal"
@@ -76,7 +77,7 @@ const FileInput = (props) => {
         </>
       )}
       {isImagesAdded && (
-        <p className="text_success">Images added to Slide {slideNum}</p>
+        <p className="text_success">Images added to Slide {slideNum + 1}</p>
       )}
     </div>
   );

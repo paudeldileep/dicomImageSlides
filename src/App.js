@@ -67,7 +67,7 @@ function App() {
         return copy;
       });
 
-      if (Object.keys(slideImages).length == 1) {
+      if (Object.keys(slideImages).length === 1) {
         handleResetSlides();
       }
     } else {
@@ -183,6 +183,7 @@ function App() {
                 borderRadius: "5px",
                 marginBottom: "40px",
               }}
+              className="box_shadow"
             >
               {/* carousal for displaying each slides */}
               <Carousel
@@ -220,7 +221,7 @@ function App() {
             alignSelf: "center",
             justifySelf: "center",
           }}
-          className="blur"
+          className="blur box_shadow"
         >
           <h3>Add Images to the slides(max 5 per slide)</h3>
           {Array.from(Array(numberOfSlides).keys()).map((item, index) => (
