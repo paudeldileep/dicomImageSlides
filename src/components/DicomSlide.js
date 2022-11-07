@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { saveAs } from "file-saver";
+import pptxgen from "pptxgenjs";
 import DicomViewPort from "./DicomViewPort";
 
 const DicomSlide = ({
@@ -9,7 +9,7 @@ const DicomSlide = ({
   addNewImages,
 }) => {
   // handle addition of new images to the slide
-  const [newImages, setNewImages] = useState([]);
+  const [newImages, setNewImages] = useState();
   const [loading, setLoading] = useState(false);
 
   const handleAddNewImages = (event) => {
@@ -21,13 +21,8 @@ const DicomSlide = ({
       window.alert("Error:Maximum 5 images per slide is allowed");
       return;
     }
-    let newFileArray = [];
-    for (let i = 0; i < event.target.files.length; i++) {
-      const images = event.target.files[i];
-      console.log("images", URL.createObjectURL(images));
-      newFileArray.push("wadouri:" + URL.createObjectURL(images));
-    }
-    setNewImages(newFileArray);
+
+    setNewImages(event.target.files);
   };
 
   const sendNewImages = () => {
@@ -52,22 +47,46 @@ const DicomSlide = ({
 
   // download a slide
   const handleDownload = () => {
-    var JSZip = require("jszip");
-    let zip = new JSZip();
+    // var JSZip = require("jszip");
+    // let zip = new JSZip();
+
+    // for (let i = 0; i < imageFiles.length; i++) {
+    //   let file = "http://localhost:" + imageFiles[i].split(":")[4];
+    //   zip.file(i + ".dcm", file);
+    //   //console.log("file:", "http://localhost:" + imageFiles[i].split(":")[4]);
+    // }
+
+    // zip
+    //   .generateAsync({
+    //     type: "blob",
+    //   })
+    //   .then((content) => {
+    //     saveAs(content, `slides_${slideNum}.zip`);
+    //   });
+
+    //create ppt and download
+    let pptx = new pptxgen();
+    let slide1 = pptx.addSlide();
+    slide1.addText(`Dicom Slide ${slideNum}`, {
+      x: "10%",
+      y: "40%",
+      fontSize: 24,
+    });
 
     for (let i = 0; i < imageFiles.length; i++) {
-      let file = "http://localhost:" + imageFiles[i].split(":")[4];
-      zip.file(i + ".dcm", file);
-      //console.log("file:", "http://localhost:" + imageFiles[i].split(":")[4]);
+      let slide = pptx.addSlide();
+      slide.addImage({
+        type: "image/jpg",
+        path: imageFiles[i].replace("wadouri:", ""),
+        x: "10%",
+        y: "10%",
+        w: "80%",
+        h: "80%",
+      });
+      slide.slideNumber = { x: 1.0, y: "97%" };
     }
 
-    zip
-      .generateAsync({
-        type: "blob",
-      })
-      .then((content) => {
-        saveAs(content, `slides_${slideNum}.zip`);
-      });
+    pptx.writeFile({ fileName: `Dicom-slide-${slideNum}` });
   };
 
   return (

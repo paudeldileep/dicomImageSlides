@@ -1,6 +1,6 @@
 # Getting Started with Dicom Image Slides Viewer
 
-Live at [Dicom Slides Viewer](https://dicomviewer-two.vercel.app/).
+Live at [Dicom Slides Viewer](https://dicom-image-slides.vercel.app/).
 
 ## Features
 
@@ -10,19 +10,23 @@ Live at [Dicom Slides Viewer](https://dicomviewer-two.vercel.app/).
     4. Navigate to each image in a slide
     4. Add further images to each slide
     5. Remove current slide
-    6. Download images in the current slide
+    6. Download pptx of each slide(todo: need to convert dicom images to png/jpg to work with powerpoint)
+
+    Added:
+        1.Images are now sent to server and accessed using server URL(suited for doing .dcm to png/jpg conversion at server side)
 
 ### `Limitations`
 
     * Please add DICOM images (.dcm)to slide from your local storage(device)
-    * Images are not sent to server and accessed using temporary local URL
     * Random app crashes while scrolling down each image on a slide (advised to wait 10-15 sec before scrolling on a slide)
-    * Because of local object URL the downloaded files are also not actual .dcm (but the code work fine with image URLs pulled from server)
+    * Because of .dcm extension the DICOM images are not visible in pptx file
+    *
 
 ### Dependencies
 
     1. "react-cornerstone-viewport" for viewing the images
     2. "react-responsive-carousel" for creating slide carousel
+    3. "pptxgenjs" for creating and downloading pptx from slide images
 
 ## Available Scripts for running locally:
 

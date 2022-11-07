@@ -3,7 +3,7 @@ import { useState } from "react";
 const FileInput = (props) => {
   const { slideNum, addImagesToSlide } = props;
 
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState();
   const [isImagesAdded, setIsImagesAdded] = useState(false);
 
   const handleFileChange = (event) => {
@@ -11,12 +11,8 @@ const FileInput = (props) => {
       window.alert("Please select maximum 5 images");
       return;
     }
-    let fileArray = [];
-    for (let i = 0; i < event.target.files.length; i++) {
-      const fls = event.target.files[i];
-      fileArray.push("wadouri:" + URL.createObjectURL(fls));
-    }
-    setImages(fileArray);
+
+    setImages(event.target.files);
   };
 
   //send images back to parent(here App.js) where this component is loaded
@@ -27,7 +23,7 @@ const FileInput = (props) => {
     if (images.length > 1 && images.length <= 5) {
       addImagesToSlide(slideNum, images);
       setIsImagesAdded(true);
-      setImages([]);
+      setImages();
     } else {
       window.alert("Maximum 5 and minimum 2 images is required");
     }

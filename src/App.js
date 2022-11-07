@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import DicomSlide from "./components/DicomSlide";
 import FileInput from "./components/FileInput";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
+import axios from "axios";
+import cornerstone from "cornerstone-core";
+import { cornerstoneWADOImageLoader } from "cornerstone-wado-image-loader";
 
 function App() {
   const [numberOfSlides, setNumberOfSlides] = useState(1);
@@ -31,6 +34,18 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    cornerstone
+      .loadImage(
+        `wadouri:http://localhost:4000/public/938d62c1-4276-4993-a621-46471d86bc6a-image-000006.dcm`
+      )
+      .then((img) => {
+        console.log("img", img);
+        console.log("data:", img.getPixelData());
+      })
+      .catch((err) => console.log("err", err));
+  }, []);
+
   //reset created slides , start over
   const handleResetSlides = () => {
     setIsSlidesSet(false);
@@ -42,7 +57,24 @@ function App() {
   //add images to slide from the modal dialogue box
   const handleAddImagesToSlide = (slideNum, images) => {
     //update state with slideNum and images array
-    setSlideImages({ ...slideImages, [slideNum]: images });
+    //setSlideImages({ ...slideImages, [slideNum]: images });
+
+    //upload images to server and get url
+    let formData = new FormData();
+    for (const key of Object.keys(images)) {
+      formData.append("images", images[key]);
+    }
+    formData.append("slideNum", slideNum);
+    // local url: http://localhost:4000/api/upload
+    //live url:https://dicom-backend-test.herokuapp.com/api/upload
+    axios
+      .post("https://dicom-backend-test.herokuapp.com/api/upload", formData, {})
+      .then((res) => {
+        console.log(res.data);
+        const images_array = res.data.images.map((img) => "wadouri:" + img);
+        setSlideImages({ ...slideImages, [slideNum]: images_array });
+      })
+      .catch((err) => window.alert("something went wrong!"));
   };
 
   //creating slides
@@ -76,12 +108,33 @@ function App() {
   };
 
   //add new images to existing slide
-  const handleAddNewImages = (slideNum, imgs) => {
-    setSlideImages((prev) => {
-      const copy = { ...prev };
-      copy[slideNum] = [...prev[slideNum], ...imgs];
-      return copy;
-    });
+  const handleAddNewImages = (slideNum, images) => {
+    //upload images to server and get url
+    let formData = new FormData();
+    for (const key of Object.keys(images)) {
+      formData.append("images", images[key]);
+    }
+    formData.append("slideNum", slideNum);
+
+    // local url: http://localhost:4000/api/upload
+    //live url:https://dicom-backend-test.herokuapp.com/api/upload
+    axios
+      .post("https://dicom-backend-test.herokuapp.com/api/upload", formData, {
+        headers: { "Access-Control-Allow-Origin": "*" },
+      })
+      .then((res) => {
+        console.log(res.data);
+        const images_array = res.data.images.map((img) => "wadouri:" + img);
+        //setSlideImages({ ...slideImages, [slideNum]: images_array });
+        setSlideImages((prev) => {
+          const copy = { ...prev };
+          copy[slideNum] = [...prev[slideNum], ...images_array];
+          return copy;
+        });
+      })
+      .catch((err) => {
+        window.alert("something went wrong!");
+      });
   };
 
   //handle cancel button
